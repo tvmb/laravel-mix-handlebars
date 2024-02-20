@@ -24,6 +24,7 @@ class HandlebarTask extends Task {
         this.src = process.cwd() + '/' + params.src;
         this.dist = process.cwd() + '/' + params.dist;
         this.variables = params.variables;
+        this.helpers = params.helpers || [];
 
         const cwd = process.cwd();
         this.Handlebars = require('handlebars');
@@ -36,7 +37,7 @@ class HandlebarTask extends Task {
     }
 
     compile() {
-        this.registerHelper();
+        this.registerHelpers();
         this.registerPartial();
         this.render()
     }
@@ -90,8 +91,14 @@ class HandlebarTask extends Task {
         }
     }
 
-    registerHelper() {
+    registerHelpers() {
         this.Handlebars.registerHelper(this.layouts(this.Handlebars));
+
+        if(this.helpers) {
+            this.helpers.forEach(helper=>{
+                this.Handlebars.registerHelper(helper.title, helper.func);
+            });
+        }
     }
 }
 
